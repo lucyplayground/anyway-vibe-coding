@@ -118,19 +118,19 @@ AI는 소스·대상 브랜치와 변경 범위를 확인하고 필요한 커밋
 
 다음 튜토리얼의 기능 브랜치는 최신 develop에서 생성합니다. main에만 반영된 환경 설정이 있으면 먼저 AI가 PR 없이 main을 develop에 병합·푸시한 뒤 최신 develop을 기준으로 작업합니다. 같은 브랜치의 원격 변경을 로컬에 가져오는 작업에는 PR이 필요하지 않습니다.
 
-커밋 메시지는 `<type>(<scope>): <summary>` 형식을 사용합니다.
+커밋 메시지는 `<type>(<scope>): <summary>` 형식을 사용합니다. type과 scope는 영문 식별자를 유지하고, summary와 본문은 한글로 작성합니다.
 
 ```text
-feat(tutorial-01): add todo creation
-fix(tutorial-01): correct todo deletion
-docs(repo): add repository readme
+feat(tutorial-01): 할 일 추가 기능 구현
+fix(tutorial-01): 할 일 삭제 오류 수정
+docs(repo): 저장소 README 추가
 ```
 
 상세한 작업 경계, 커밋 메시지와 병합 절차는 [AGENTS.md](AGENTS.md)를 따릅니다.
 
 ## PR 작성 양식
 
-PR 제목은 커밋 메시지와 같은 `<type>(<scope>): <summary>` 형식으로 전체 변경을 요약합니다. 본문은 모든 PR에서 **변경 내용**과 **실습 기록** 두 항목을 필수로 작성합니다.
+PR 제목은 커밋 메시지와 같은 `<type>(<scope>): <summary>` 형식으로 전체 변경을 요약합니다. type과 scope는 영문 식별자를 유지하고, summary는 한글로 작성합니다. 본문은 모든 PR에서 **변경 내용**과 **실습 기록** 두 항목을 필수로 작성합니다.
 
 ```markdown
 ## 변경 내용
