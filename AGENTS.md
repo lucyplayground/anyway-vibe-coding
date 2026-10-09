@@ -50,7 +50,7 @@ main에만 반영된 환경 설정이 있으면 다음 기능 브랜치 생성 �
 
 ## PR 작성 양식
 
-- 제목은 커밋 메시지와 같은 `<type>(<scope>): <summary>` 형식으로 PR 전체의 변경을 요약한다.
+- 제목은 커밋 메시지와 같은 `<type>(<scope>): <summary>` 형식으로 PR 전체의 변경을 요약한다. type과 scope는 영문 식별자를 유지하고, summary는 한글로 작성한다.
 - 모든 PR 본문은 아래 양식을 사용하며, `변경 내용`과 `실습 기록`을 모두 필수로 작성한다.
 - `변경 내용`에는 실제로 만들거나 수정한 내용을 짧은 목록으로 적는다. 필요한 경우 변경 이유를 함께 설명한다.
 - `실습 기록`에는 튜토리얼 번호·이름과 포함된 단계 또는 기록 경로를 적는다. 지침·환경 설정 등 실습과 무관한 작업은 `해당 없음 (프로젝트 지침 수정)`처럼 이유를 함께 적는다. 새 기록이 없는 브랜치 동기화는 `새 실습 기록 없음 (브랜치 동기화)`처럼 적는다.
@@ -76,7 +76,7 @@ main에만 반영된 환경 설정이 있으면 다음 기능 브랜치 생성 �
 
 ## 커밋 메시지
 
-Angular Git Commit Message Convention을 기반으로 작성한다.
+Angular Git Commit Message Convention의 형식을 기반으로 하되, summary와 본문은 한글로 작성한다.
 
 ```text
 <type>(<scope>): <summary>
@@ -86,24 +86,24 @@ Angular Git Commit Message Convention을 기반으로 작성한다.
 
 - type과 summary는 필수다. scope는 `tutorial-01`, `skills`, `repo` 등 변경 대상을 사용한다.
 - 기본 type은 Angular의 `build`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `test`를 사용한다. 환경 설정과 병합 커밋에는 이 프로젝트의 추가 type인 `chore`를 허용한다.
-- summary는 짧은 영어 명령형으로 쓰며 소문자로 시작하고 끝에 마침표를 붙이지 않는다.
+- type과 scope는 영문 식별자를 유지한다. summary는 `할 일 추가`, `삭제 오류 수정`처럼 변경 내용을 짧은 한글로 쓰고 끝에 마침표를 붙이지 않는다. 코드·파일명 등 고유 식별자는 원문을 유지한다.
 - docs 외에는 본문을 작성한다. 본문은 20자 이상으로 변경 이유와 주요 내용을 설명하고, 필요한 경우 관련 단계 경로를 적는다.
 - 최종 squash 커밋도 같은 형식으로 작성한다. 여러 중간 커밋 제목을 나열하는 대신 튜토리얼 전체의 완성 내용을 설명한다.
 
 예시:
 
 ```text
-feat(tutorial-01): add todo creation
+feat(tutorial-01): 할 일 추가 기능 구현
 
-Allow users to add todos and preserve the development prompt in
-tutorials/tutorial-01/steps/02-add-todo.md.
+사용자가 새 할 일을 추가할 수 있도록 입력 기능을 구현하고,
+개발 요청을 tutorials/tutorial-01/steps/02-add-todo.md에 기록한다.
 ```
 
 ```text
-feat(tutorial-01): complete todo app tutorial
+feat(tutorial-01): 할 일 앱 튜토리얼 완성
 
-Deliver the completed todo app with its sequential development logs
-and verified setup instructions.
+완성된 할 일 앱과 단계별 개발 기록을 정리하고,
+검증한 설치 및 실행 방법을 안내한다.
 ```
 
 기준: https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md
