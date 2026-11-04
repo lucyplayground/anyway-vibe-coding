@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>할 일 목록</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      background: #f5f7fb;
+      color: #172033;
+      font: 1rem/1.6 system-ui, sans-serif;
+    }
+
+    header,
+    footer {
+      background: #fff;
+    }
+
+    header {
+      border-bottom: 1px solid #d9e0ea;
+    }
+
+    main,
+    h1 {
+      width: min(100% - 2rem, 30rem);
+    }
+
+    main {
+      flex: 1;
+      margin: 1.5rem auto;
+    }
+
+    h1 {
+      margin: 0 auto;
+      padding: 1rem 0;
+      font-size: 1.75rem;
+    }
+
+    footer {
+      padding: 1rem;
+      border-top: 1px solid #d9e0ea;
+      color: #4c596d;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .editor-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    input[type="text"],
+    button {
+      min-height: 48px;
+      border: 1px solid #67748a;
+      border-radius: 0.5rem;
+      font: inherit;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      min-width: 0;
+      padding: 0.5rem 0.75rem;
+    }
+
+    button {
+      flex-shrink: 0;
+      min-width: 44px;
+      padding: 0.5rem 0.75rem;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      border-color: #2146a6;
+      background: #2146a6;
+      color: #fff;
+    }
+
+    .add-task {
+      width: 100%;
+      margin-top: 0.75rem;
+    }
+
+    .task-delete {
+      border-color: transparent;
+      background: #fce8eb;
+      color: #9b2335;
+    }
+
+    .task-delete:active {
+      background: #9b2335;
+      color: #fff;
+    }
+
+    .task-edit {
+      border-color: transparent;
+      background: #eef3ff;
+      color: #2146a6;
+    }
+
+    .task-editor {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      background: #f5f7fb;
+    }
+
+    .edit-title {
+      display: grid;
+      gap: 0.5rem;
+      margin: 0;
+    }
+
+    .editor-actions {
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+
+    :focus-visible {
+      outline: 2px solid #2146a6;
+      outline-offset: 2px;
+    }
+
+    .list-panel {
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      background: #fff;
+    }
+
+    .list-heading-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    fieldset {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .priority-picker {
+      margin-top: 0.75rem;
+    }
+
+    .priority-picker legend {
+      padding: 0;
+      margin-bottom: 0.375rem;
+      font-weight: 600;
+    }
+
+    .segments {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 0.25rem;
+      padding: 0.25rem;
+      border-radius: 0.75rem;
+      background: #e9edf4;
+    }
+
+    .visually-hidden,
+    .segments input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      clip-path: inset(50%);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .segments label {
+      position: relative;
+      margin: 0;
+    }
+
+    .segments span {
+      display: grid;
+      min-height: 44px;
+      place-items: center;
+      padding: 0.25rem;
+      border-radius: 0.5rem;
+      color: #4c596d;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .segments input:checked + span {
+      background: #fff;
+      color: #2146a6;
+      box-shadow: 0 1px 3px #17203326;
+    }
+
+    .segments input:focus-visible + span {
+      outline: 2px solid #2146a6;
+      outline-offset: 1px;
+    }
+
+    #task-sort .segments span {
+      padding-inline: 0.625rem;
+    }
+
+    .task-row:not([hidden]) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.125rem;
+    }
+
+    ul {
+      display: grid;
+      gap: 0.75rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    ul:not(:empty) {
+      margin-top: 0.75rem;
+    }
+
+    .task-toggle {
+      display: flex;
+      align-items: stretch;
+      gap: 0.5rem;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+    }
+
+    .task-checkmark {
+      flex: 0 0 1.5rem;
+      align-self: center;
+      font-size: 1.25rem;
+      text-align: center;
+    }
+
+    .task-text {
+      display: grid;
+      flex: 1;
+      align-content: center;
+      min-width: 0;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.5rem;
+      background: #f5f7fb;
+      overflow-wrap: anywhere;
+    }
+
+    .task-text[data-priority="high"] {
+      background: #fce8eb;
+    }
+
+    .task-text[data-priority="normal"] {
+      background: #e9f0ff;
+    }
+
+    .task-text[data-priority="low"] {
+      background: #e7f4ed;
+    }
+
+    .task-toggle[aria-pressed="true"] {
+      color: #536174;
+    }
+
+    .task-toggle[aria-pressed="true"] .task-text {
+      text-decoration: line-through;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .task-toggle:hover .task-text {
+        filter: brightness(0.96);
+      }
+    }
+
+    #empty-message {
+      margin: 0.75rem 0 0;
+      color: #4c596d;
+    }
+
+    #storage-message {
+      margin: 0.75rem 0 0;
+      color: #9b2335;
+    }
+
+    #storage-message:empty {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>할 일 목록</h1>
+  </header>
+
+  <main>
+    <form id="todo-form">
+      <label for="todo-input">새 할 일</label>
+      <input id="todo-input" type="text" placeholder="할 일을 입력하세요" required>
+      <button class="add-task" type="submit">추가</button>
+    </form>
+
+    <section class="list-panel" aria-labelledby="list-heading">
+      <div class="list-heading-row">
+        <h2 id="list-heading">할 일</h2>
+        <fieldset id="task-sort">
+          <legend class="visually-hidden">목록 정렬</legend>
+          <div class="segments">
+            <label><input type="radio" name="sort" value="created" checked><span>등록순</span></label>
+            <label><input type="radio" name="sort" value="priority"><span>우선순위순</span></label>
+          </div>
+        </fieldset>
+      </div>
+      <p id="storage-message" role="status"></p>
+      <p id="empty-message">아직 등록된 할 일이 없어요.</p>
+      <ul id="todo-list" role="list"></ul>
+    </section>
+  </main>
+
+  <footer>© Lucyground</footer>
+
+  <template id="priority-picker-template">
+    <fieldset class="priority-picker">
+      <legend>우선순위</legend>
+      <div class="segments">
+        <label><input type="radio" name="priority" value="unset" checked><span>미지정</span></label>
+        <label><input type="radio" name="priority" value="high"><span>높음</span></label>
+        <label><input type="radio" name="priority" value="normal"><span>보통</span></label>
+        <label><input type="radio" name="priority" value="low"><span>낮음</span></label>
+      </div>
+    </fieldset>
+  </template>
+
+  <template id="task-editor-template">
+    <form class="task-editor" hidden>
+      <label class="edit-title">
+        할 일 편집
+        <input type="text" required>
+      </label>
+      <div class="editor-actions">
+        <button type="button">취소</button>
+        <button type="submit">저장</button>
+      </div>
+    </form>
+  </template>
+
+  <script>
+    const form = document.querySelector("#todo-form");
+    const input = document.querySelector("#todo-input");
+    const list = document.querySelector("#todo-list");
+    const emptyMessage = document.querySelector("#empty-message");
+    const storageMessage = document.querySelector("#storage-message");
+    const editorTemplate = document.querySelector("#task-editor-template");
+    const sortPicker = document.querySelector("#task-sort");
+    const pickerTemplate = document.querySelector("#priority-picker-template");
+    const storageKey = "tutorial-01-todo-tasks";
+    const priorityLabels = new Map([
+      ["high", "높음"],
+      ["normal", "보통"],
+      ["low", "낮음"],
+      ["unset", "미지정"]
+    ]);
+    const priorityOrder = [...priorityLabels.keys()];
+    const tasks = loadTasks();
+    const taskItems = new Map();
+
+    function insertPriorityPicker(taskForm, before) {
+      taskForm.insertBefore(pickerTemplate.content.cloneNode(true), before);
+      return taskForm.elements.namedItem("priority");
+    }
+
+    function loadTasks() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) ?? "[]");
+        if (!Array.isArray(saved) || !saved.every((task) =>
+          typeof task?.text === "string" && task.text.trim() &&
+          typeof task.completed === "boolean"
+        )) {
+          throw new Error("Invalid saved tasks");
+        }
+        return saved.map((task) => ({
+          ...task,
+          priority: priorityLabels.has(task.priority) ? task.priority : "unset"
+        }));
+      } catch {
+        storageMessage.textContent = "저장된 할 일을 불러올 수 없어요.";
+        return [];
+      }
+    }
+
+    function saveTasks() {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(tasks));
+        storageMessage.textContent = "";
+      } catch {
+        storageMessage.textContent = "할 일을 저장할 수 없어요. 새로고침하면 변경 사항이 사라질 수 있어요.";
+      }
+    }
+
+    function updateListOrder() {
+      const orderedTasks = sortPicker.querySelector(":checked").value === "priority"
+        ? [...tasks].sort((a, b) =>
+          priorityOrder.indexOf(a.priority) - priorityOrder.indexOf(b.priority)
+        )
+        : tasks;
+
+      for (const [index, task] of orderedTasks.entries()) {
+        const item = taskItems.get(task);
+        const currentItem = list.children[index];
+        if (item !== currentItem) {
+          list.insertBefore(item, currentItem ?? null);
+        }
+      }
+    }
+
+    function renderTask(task) {
+      const item = document.createElement("li");
+      const row = document.createElement("div");
+      row.className = "task-row";
+      const toggleButton = document.createElement("button");
+      toggleButton.type = "button";
+      toggleButton.className = "task-toggle";
+
+      const checkmark = document.createElement("span");
+      checkmark.className = "task-checkmark";
+      checkmark.setAttribute("aria-hidden", "true");
+
+      function updateCompletion() {
+        toggleButton.setAttribute("aria-pressed", String(task.completed));
+        checkmark.textContent = task.completed ? "☑" : "☐";
+      }
+
+      const label = document.createElement("span");
+      label.className = "task-text";
+      toggleButton.append(checkmark, label);
+      toggleButton.addEventListener("click", () => {
+        task.completed = !task.completed;
+        updateCompletion();
+        saveTasks();
+      });
+
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.className = "task-edit";
+      editButton.textContent = "편집";
+
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "task-delete";
+      deleteButton.textContent = "삭제";
+      deleteButton.addEventListener("click", () => {
+        const nextItem = item.nextElementSibling ?? item.previousElementSibling;
+        tasks.splice(tasks.indexOf(task), 1);
+        taskItems.delete(task);
+        item.remove();
+        emptyMessage.hidden = tasks.length > 0;
+        saveTasks();
+        const nextFocus = nextItem?.querySelector(
+          ".task-row:not([hidden]) .task-delete, .task-editor:not([hidden]) input"
+        ) ?? input;
+        nextFocus.focus();
+      });
+
+      const editor = editorTemplate.content.firstElementChild.cloneNode(true);
+      const editInput = editor.querySelector("input");
+      const cancelButton = editor.querySelector('button[type="button"]');
+      const editPriority = insertPriorityPicker(editor, editor.querySelector(".editor-actions"));
+
+      function updateTaskDetails() {
+        label.textContent = task.text;
+        label.dataset.priority = task.priority;
+        const title = task.priority === "unset"
+          ? task.text
+          : `${task.text}, 우선순위 ${priorityLabels.get(task.priority)}`;
+        toggleButton.setAttribute("aria-label", title);
+        editButton.setAttribute("aria-label", `편집: ${task.text}`);
+        deleteButton.setAttribute("aria-label", `삭제: ${task.text}`);
+      }
+
+      function closeEditor() {
+        editor.hidden = true;
+        row.hidden = false;
+        editButton.focus();
+      }
+
+      editButton.addEventListener("click", () => {
+        editInput.value = task.text;
+        editPriority.value = task.priority;
+        row.hidden = true;
+        editor.hidden = false;
+        editInput.focus();
+        editInput.setSelectionRange(editInput.value.length, editInput.value.length);
+      });
+
+      editor.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const text = editInput.value.trim();
+        if (!text) {
+          editInput.value = "";
+          editInput.reportValidity();
+          return;
+        }
+        task.text = text;
+        task.priority = editPriority.value;
+        updateTaskDetails();
+        saveTasks();
+        updateListOrder();
+        closeEditor();
+      });
+
+      cancelButton.addEventListener("click", closeEditor);
+      editor.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !event.isComposing) {
+          event.preventDefault();
+          closeEditor();
+        }
+      });
+
+      updateTaskDetails();
+      updateCompletion();
+      row.append(toggleButton, editButton, deleteButton);
+      item.append(row, editor);
+      taskItems.set(task, item);
+      list.append(item);
+    }
+
+    tasks.forEach(renderTask);
+    emptyMessage.hidden = tasks.length > 0;
+    sortPicker.querySelector('[value="created"]').checked = true;
+    sortPicker.addEventListener("change", updateListOrder);
+    const newPriority = insertPriorityPicker(form, form.querySelector(".add-task"));
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const text = input.value.trim();
+      if (!text) {
+        input.value = "";
+        input.reportValidity();
+        return;
+      }
+
+      const task = { text, completed: false, priority: newPriority.value };
+      tasks.push(task);
+      renderTask(task);
+      updateListOrder();
+      emptyMessage.hidden = true;
+      saveTasks();
+      form.reset();
+      input.focus();
+    });
+  </script>
+</body>
+</html>
