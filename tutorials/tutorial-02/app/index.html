@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인터랙티브 차트 대시보드</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="page-header">
+        <p class="eyebrow">TUTORIAL 02 · CHART.JS</p>
+        <h1>인터랙티브 차트 대시보드</h1>
+        <p class="description">월별 판매·누적 합계와 시장 점유율을 살펴보세요. 실습용 예시 데이터이며, 판매액 단위는 만원입니다.</p>
+        <div class="stream-controls" data-export-ignore>
+          <label class="stream-toggle" for="toggle-stream">
+            <input id="toggle-stream" type="checkbox" role="switch" aria-controls="bar-chart line-chart" checked disabled>
+            실시간 업데이트
+          </label>
+          <button id="export-png" type="button" disabled>PNG로 내보내기</button>
+          <p id="stream-status" class="description">차트를 불러오는 중입니다.</p>
+        </div>
+        <p id="export-status" class="description" role="status" data-export-ignore></p>
+      </header>
+
+      <p id="chart-error" class="error" role="alert" hidden>
+        차트를 불러오지 못했습니다. 인터넷 연결을 확인하고 페이지를 새로고침해 주세요.
+      </p>
+      <noscript><p class="error">차트를 표시하려면 JavaScript를 활성화해 주세요.</p></noscript>
+
+      <div class="chart-grid">
+        <section class="chart-card" aria-labelledby="bar-title">
+          <div class="chart-heading">
+            <h2 id="bar-title">월별 판매</h2>
+            <label class="dataset-toggle" for="show-monthly-sales" data-export-ignore>
+              <input id="show-monthly-sales" type="checkbox" aria-controls="bar-chart" checked disabled>
+              월별 판매 표시
+            </label>
+          </div>
+          <p class="chart-description">각 월의 판매액을 비교합니다.</p>
+          <div class="chart-container">
+            <canvas id="bar-chart" role="img" aria-label="월별 판매액 막대 차트">
+              1~6월 예시 판매액을 표시하는 막대 차트입니다. 단위는 만원입니다.
+            </canvas>
+          </div>
+        </section>
+
+        <section class="chart-card" aria-labelledby="line-title">
+          <div class="chart-heading">
+            <h2 id="line-title">누적 합계</h2>
+            <label class="dataset-toggle" for="show-cumulative-sales" data-export-ignore>
+              <input id="show-cumulative-sales" type="checkbox" aria-controls="line-chart" checked disabled>
+              누적 합계 표시
+            </label>
+          </div>
+          <p class="chart-description">1월부터 해당 월까지의 판매액을 합산합니다.</p>
+          <div class="chart-container">
+            <canvas id="line-chart" role="img" aria-label="누적 판매액 꺾은선 차트">
+              1~6월 예시 판매액의 누적 합계를 표시하는 꺾은선 차트입니다. 단위는 만원입니다.
+            </canvas>
+          </div>
+        </section>
+        <section class="chart-card market-card" aria-labelledby="market-title">
+          <div class="chart-heading">
+            <h2 id="market-title">시장 점유율</h2>
+            <label class="dataset-toggle" for="show-market-share" data-export-ignore>
+              <input id="show-market-share" type="checkbox" aria-controls="market-share-chart" checked disabled>
+              시장 점유율 표시
+            </label>
+          </div>
+          <p class="chart-description">기업별 시장 점유율을 비교합니다. 합계 100%의 고정 예시이며, 실제 시장 통계가 아닙니다.</p>
+          <div class="chart-container market-chart-container">
+            <canvas id="market-share-chart" role="img" aria-label="시장 점유율 예시 원형 차트">
+              실습용 시장 점유율을 표시하는 원형 차트입니다.
+            </canvas>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
