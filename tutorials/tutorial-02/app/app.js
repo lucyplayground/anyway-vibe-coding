@@ -8,6 +8,14 @@ const salesData = [
   { month: "6월", sales: 240 },
 ];
 
+// 실제 시장 통계가 아닌 실습용 점유율입니다. 합계는 100%입니다.
+const marketShareData = [
+  { name: "A사", share: 40, color: "#3b82f6" },
+  { name: "B사", share: 30, color: "#0f766e" },
+  { name: "C사", share: 20, color: "#d97706" },
+  { name: "기타", share: 10, color: "#8b5cf6" },
+];
+
 const months = salesData.map(({ month }) => month);
 const monthlySales = salesData.map(({ sales }) => sales);
 let runningTotal = 0;
@@ -108,6 +116,58 @@ if (typeof Chart === "undefined") {
     checkbox.disabled = false;
     chartStates.push({ chart, syncCheckbox });
   }
+
+  const marketCanvas = document.getElementById("market-share-chart");
+  const marketCheckbox = document.getElementById("show-market-share");
+  const marketChart = new Chart(marketCanvas, {
+    type: "pie",
+    data: {
+      labels: marketShareData.map(({ name, share }) => `${name} ${share}%`),
+      datasets: [{
+        label: "시장 점유율 (%)",
+        data: marketShareData.map(({ share }) => share),
+        backgroundColor: marketShareData.map(({ color }) => color),
+        borderColor: "#fff",
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: {
+          callbacks: {
+            title: () => "",
+            label: (context) => context.label,
+          },
+        },
+      },
+    },
+  });
+
+  const syncMarketCheckbox = () => {
+    marketCheckbox.checked = marketChart.isDatasetVisible(0);
+    const segments = marketShareData.map(({ name, share }, index) => {
+      const hidden = !marketChart.isDatasetVisible(0) || !marketChart.getDataVisibility(index);
+      return `${name} ${share}%${hidden ? " (숨김)" : ""}`;
+    });
+    const description = `시장 점유율 예시: ${segments.join(", ")}`;
+    marketCanvas.setAttribute("aria-label", description);
+    marketCanvas.textContent = description;
+  };
+
+  marketCheckbox.addEventListener("change", () => {
+    marketChart.setDatasetVisibility(0, marketCheckbox.checked);
+    marketChart.update();
+    syncMarketCheckbox();
+  });
+  marketChart.options.plugins.legend.onClick = (event, item, legend) => {
+    Chart.overrides.pie.plugins.legend.onClick.call(legend, event, item, legend);
+    syncMarketCheckbox();
+  };
+  syncMarketCheckbox();
+  marketCheckbox.disabled = false;
 
   let totalMonths = salesData.length;
   let streamingEnabled = true;
