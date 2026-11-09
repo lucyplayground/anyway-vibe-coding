@@ -7,6 +7,7 @@
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="styles.css">
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script defer src="app.js"></script>
   </head>
   <body>
@@ -15,13 +16,15 @@
         <p class="eyebrow">TUTORIAL 02 · CHART.JS</p>
         <h1>인터랙티브 차트 대시보드</h1>
         <p class="description">월별 판매·누적 합계와 시장 점유율을 살펴보세요. 실습용 예시 데이터이며, 판매액 단위는 만원입니다.</p>
-        <div class="stream-controls">
+        <div class="stream-controls" data-export-ignore>
           <label class="stream-toggle" for="toggle-stream">
             <input id="toggle-stream" type="checkbox" role="switch" aria-controls="bar-chart line-chart" checked disabled>
             실시간 업데이트
           </label>
+          <button id="export-png" type="button" disabled>PNG로 내보내기</button>
           <p id="stream-status" class="description">차트를 불러오는 중입니다.</p>
         </div>
+        <p id="export-status" class="description" role="status" data-export-ignore></p>
       </header>
 
       <p id="chart-error" class="error" role="alert" hidden>
@@ -33,7 +36,7 @@
         <section class="chart-card" aria-labelledby="bar-title">
           <div class="chart-heading">
             <h2 id="bar-title">월별 판매</h2>
-            <label class="dataset-toggle" for="show-monthly-sales">
+            <label class="dataset-toggle" for="show-monthly-sales" data-export-ignore>
               <input id="show-monthly-sales" type="checkbox" aria-controls="bar-chart" checked disabled>
               월별 판매 표시
             </label>
@@ -49,7 +52,7 @@
         <section class="chart-card" aria-labelledby="line-title">
           <div class="chart-heading">
             <h2 id="line-title">누적 합계</h2>
-            <label class="dataset-toggle" for="show-cumulative-sales">
+            <label class="dataset-toggle" for="show-cumulative-sales" data-export-ignore>
               <input id="show-cumulative-sales" type="checkbox" aria-controls="line-chart" checked disabled>
               누적 합계 표시
             </label>
@@ -64,7 +67,7 @@
         <section class="chart-card market-card" aria-labelledby="market-title">
           <div class="chart-heading">
             <h2 id="market-title">시장 점유율</h2>
-            <label class="dataset-toggle" for="show-market-share">
+            <label class="dataset-toggle" for="show-market-share" data-export-ignore>
               <input id="show-market-share" type="checkbox" aria-controls="market-share-chart" checked disabled>
               시장 점유율 표시
             </label>

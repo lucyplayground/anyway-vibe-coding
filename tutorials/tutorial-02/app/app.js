@@ -171,6 +171,7 @@ if (typeof Chart === "undefined") {
 
   let totalMonths = salesData.length;
   let streamingEnabled = true;
+  let exporting = false;
   let lastAdded = "";
   const updateStreamStatus = () => {
     const state = streamingEnabled ? "자동 갱신 중" : "일시 중지됨";
@@ -179,7 +180,7 @@ if (typeof Chart === "undefined") {
   };
 
   const appendRandomSales = () => {
-    if (!streamingEnabled) return;
+    if (!streamingEnabled || exporting) return;
     const monthNumber = totalMonths % 12 + 1;
     const yearNumber = Math.floor(totalMonths / 12) + 1;
     const month = yearNumber === 1 ? `${monthNumber}월` : `${yearNumber}년차 ${monthNumber}월`;
@@ -212,7 +213,7 @@ if (typeof Chart === "undefined") {
   let streamTimer;
   const startStreaming = () => {
     clearInterval(streamTimer);
-    if (streamingEnabled) {
+    if (streamingEnabled && !exporting) {
       streamTimer = setInterval(appendRandomSales, streamIntervalMs);
     }
   };
@@ -230,4 +231,85 @@ if (typeof Chart === "undefined") {
   window.addEventListener("pageshow", (event) => {
     if (event.persisted) startStreaming();
   });
+
+  const dashboard = document.querySelector(".dashboard");
+  const exportButton = document.getElementById("export-png");
+  const exportStatus = document.getElementById("export-status");
+
+  exportButton.addEventListener("click", async () => {
+    if (exporting) return;
+    if (typeof html2canvas !== "function") {
+      exportStatus.textContent = "이미지 저장 기능을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로고침해 주세요.";
+      return;
+    }
+
+    exporting = true;
+    clearInterval(streamTimer);
+    dashboard.setAttribute("aria-busy", "true");
+    exportButton.disabled = true;
+    exportButton.textContent = "PNG 생성 중…";
+    exportStatus.textContent = "대시보드 이미지를 만들고 있습니다.";
+    const controls = Array.from(dashboard.querySelectorAll("input"));
+    const disabledStates = controls.map((control) => control.disabled);
+    controls.forEach((control) => { control.disabled = true; });
+
+    try {
+      await document.fonts.ready;
+      const allCharts = [...chartStates.map(({ chart }) => chart), marketChart];
+      for (const chart of allCharts) {
+        chart.stop();
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([], { x: 0, y: 0 });
+        chart.update("none");
+      }
+
+      const grid = dashboard.querySelector(".chart-grid");
+      const gridRect = grid.getBoundingClientRect();
+      const cardRects = Array.from(grid.children, (card) => {
+        const rect = card.getBoundingClientRect();
+        return { left: rect.left - gridRect.left, top: rect.top - gridRect.top, width: rect.width, height: rect.height };
+      });
+
+      const image = await html2canvas(dashboard, {
+        backgroundColor: "#f5f7fb",
+        scale: 2,
+        logging: false,
+        onclone: (clonedDocument) => {
+          clonedDocument.querySelectorAll("[data-export-ignore]").forEach((element) => element.remove());
+          clonedDocument.querySelectorAll(".dashboard [hidden], .dashboard noscript").forEach((element) => element.remove());
+          clonedDocument.querySelectorAll("canvas").forEach((canvas) => canvas.replaceChildren());
+          // HTML2Canvas에서도 현재 CSS Grid 배치를 정확히 유지합니다.
+          const clonedGrid = clonedDocument.querySelector(".chart-grid");
+          Object.assign(clonedGrid.style, { display: "block", position: "relative", height: `${gridRect.height}px` });
+          Array.from(clonedGrid.children).forEach((card, index) => {
+            const rect = cardRects[index];
+            Object.assign(card.style, { position: "absolute", left: `${rect.left}px`, top: `${rect.top}px`, width: `${rect.width}px`, height: `${rect.height}px` });
+          });
+        },
+      });
+      const blob = await new Promise((resolve, reject) => {
+        image.toBlob((result) => result ? resolve(result) : reject(new Error("PNG conversion failed")), "image/png");
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `dashboard-${new Date().toISOString().replace(/[:.]/g, "-")}.png`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      exportStatus.textContent = "PNG 다운로드를 시작했습니다.";
+    } catch (error) {
+      console.error("PNG export failed", error);
+      exportStatus.textContent = "PNG를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.";
+    } finally {
+      exporting = false;
+      dashboard.removeAttribute("aria-busy");
+      controls.forEach((control, index) => { control.disabled = disabledStates[index]; });
+      exportButton.disabled = false;
+      exportButton.textContent = "PNG로 내보내기";
+      startStreaming();
+    }
+  });
+  exportButton.disabled = false;
 }

@@ -65,6 +65,37 @@ h1 {
   margin: 0;
 }
 
+#export-png {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid #1d4ed8;
+  border-radius: 8px;
+  color: #fff;
+  background: #1d4ed8;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#export-png:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+#export-png:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+#export-png:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dashboard[aria-busy="true"] .chart-container {
+  pointer-events: none;
+}
+
 .stream-toggle {
   display: inline-flex;
   align-items: center;
