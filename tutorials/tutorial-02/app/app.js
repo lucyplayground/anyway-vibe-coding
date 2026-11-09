@@ -16,9 +16,15 @@ const cumulativeSales = monthlySales.map((sales) => {
   return runningTotal;
 });
 
+const streamIntervalMs = 3000;
+const maxVisibleMonths = 12;
+const streamStatus = document.getElementById("stream-status");
+
 if (typeof Chart === "undefined") {
   document.getElementById("chart-error").hidden = false;
+  streamStatus.textContent = "차트를 불러오지 못해 자동 갱신을 시작하지 못했습니다.";
 } else {
+  const chartStates = [];
   const charts = [
     {
       id: "bar-chart",
@@ -49,9 +55,6 @@ if (typeof Chart === "undefined") {
 
   for (const { id, checkboxId, type, dataset } of charts) {
     const canvas = document.getElementById(id);
-    const description = `${dataset.label}: ${months.map((month, index) => `${month} ${dataset.data[index]}`).join(", ")}`;
-    canvas.setAttribute("aria-label", description);
-    canvas.textContent = description;
 
     const chart = new Chart(canvas, {
       type,
@@ -81,8 +84,10 @@ if (typeof Chart === "undefined") {
     const checkbox = document.getElementById(checkboxId);
     const syncCheckbox = () => {
       const visible = chart.isDatasetVisible(0);
+      const description = `${dataset.label}: ${months.map((month, index) => `${month} ${dataset.data[index]}`).join(", ")}`;
       checkbox.checked = visible;
       canvas.setAttribute("aria-label", visible ? description : `${description} (데이터세트 숨김)`);
+      canvas.textContent = description;
     };
 
     checkbox.addEventListener("change", () => {
@@ -99,5 +104,51 @@ if (typeof Chart === "undefined") {
 
     syncCheckbox();
     checkbox.disabled = false;
+    chartStates.push({ chart, syncCheckbox });
   }
+
+  let totalMonths = salesData.length;
+  const streamDescription = `자동 갱신 중 · ${streamIntervalMs / 1000}초마다 예시 데이터 추가 · 최근 ${maxVisibleMonths}개월 표시`;
+
+  const appendRandomSales = () => {
+    const monthNumber = totalMonths % 12 + 1;
+    const yearNumber = Math.floor(totalMonths / 12) + 1;
+    const month = yearNumber === 1 ? `${monthNumber}월` : `${yearNumber}년차 ${monthNumber}월`;
+    const sales = Math.floor(Math.random() * 201) + 100;
+    totalMonths += 1;
+    runningTotal += sales;
+
+    salesData.push({ month, sales });
+    months.push(month);
+    monthlySales.push(sales);
+    cumulativeSales.push(runningTotal);
+
+    // 표시 범위를 제한해도 누적 합계는 첫 달부터의 총액을 유지합니다.
+    if (months.length > maxVisibleMonths) {
+      salesData.shift();
+      months.shift();
+      monthlySales.shift();
+      cumulativeSales.shift();
+    }
+
+    for (const { chart, syncCheckbox } of chartStates) {
+      chart.update();
+      syncCheckbox();
+    }
+
+    streamStatus.textContent = `${streamDescription} · 최근 추가: ${month}, ${sales}만원`;
+  };
+
+  let streamTimer;
+  const startStreaming = () => {
+    clearInterval(streamTimer);
+    streamTimer = setInterval(appendRandomSales, streamIntervalMs);
+  };
+
+  streamStatus.textContent = streamDescription;
+  startStreaming();
+  window.addEventListener("pagehide", () => clearInterval(streamTimer));
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) startStreaming();
+  });
 }
