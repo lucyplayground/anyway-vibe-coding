@@ -75,29 +75,39 @@ h2 {
   gap: 12px;
 }
 
-#toggle-bars {
+.dataset-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   min-height: 44px;
   padding: 8px 14px;
   border: 1px solid #bfdbfe;
   border-radius: 8px;
   color: #1d4ed8;
   background: #eff6ff;
-  font: inherit;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
-#toggle-bars:hover:not(:disabled) {
+.dataset-toggle:hover {
   background: #dbeafe;
 }
 
-#toggle-bars:focus-visible {
+.dataset-toggle input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #2563eb;
+  cursor: pointer;
+}
+
+.dataset-toggle input:focus-visible {
   outline: 3px solid #2563eb;
   outline-offset: 3px;
 }
 
-#toggle-bars:disabled {
+.dataset-toggle:has(input:disabled) {
   opacity: 0.5;
   cursor: not-allowed;
 }

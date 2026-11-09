@@ -22,6 +22,7 @@ if (typeof Chart === "undefined") {
   const charts = [
     {
       id: "bar-chart",
+      checkboxId: "show-monthly-sales",
       type: "bar",
       dataset: {
         label: "월별 판매액 (만원)",
@@ -32,6 +33,7 @@ if (typeof Chart === "undefined") {
     },
     {
       id: "line-chart",
+      checkboxId: "show-cumulative-sales",
       type: "line",
       dataset: {
         label: "누적 판매액 (만원)",
@@ -45,7 +47,7 @@ if (typeof Chart === "undefined") {
     },
   ];
 
-  for (const { id, type, dataset } of charts) {
+  for (const { id, checkboxId, type, dataset } of charts) {
     const canvas = document.getElementById(id);
     const description = `${dataset.label}: ${months.map((month, index) => `${month} ${dataset.data[index]}`).join(", ")}`;
     canvas.setAttribute("aria-label", description);
@@ -76,28 +78,26 @@ if (typeof Chart === "undefined") {
       },
     });
 
-    if (type === "bar") {
-      const button = document.getElementById("toggle-bars");
-      const syncButton = () => {
-        const visible = chart.isDatasetVisible(0);
-        button.textContent = visible ? "막대 숨기기" : "막대 보여 주기";
-        canvas.setAttribute("aria-label", visible ? description : `${description} (막대 숨김)`);
-      };
+    const checkbox = document.getElementById(checkboxId);
+    const syncCheckbox = () => {
+      const visible = chart.isDatasetVisible(0);
+      checkbox.checked = visible;
+      canvas.setAttribute("aria-label", visible ? description : `${description} (데이터세트 숨김)`);
+    };
 
-      button.addEventListener("click", () => {
-        chart.setDatasetVisibility(0, !chart.isDatasetVisible(0));
-        chart.update();
-        syncButton();
-      });
+    checkbox.addEventListener("change", () => {
+      chart.setDatasetVisibility(0, checkbox.checked);
+      chart.update();
+      syncCheckbox();
+    });
 
-      // 범례로 표시 상태를 바꿔도 버튼 문구를 같은 상태로 유지합니다.
-      chart.options.plugins.legend.onClick = (event, item, legend) => {
-        Chart.defaults.plugins.legend.onClick.call(legend, event, item, legend);
-        syncButton();
-      };
+    // 범례로 표시 상태를 바꿔도 체크 상태를 같은 상태로 유지합니다.
+    chart.options.plugins.legend.onClick = (event, item, legend) => {
+      Chart.defaults.plugins.legend.onClick.call(legend, event, item, legend);
+      syncCheckbox();
+    };
 
-      syncButton();
-      button.disabled = false;
-    }
+    syncCheckbox();
+    checkbox.disabled = false;
   }
 }
