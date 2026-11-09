@@ -53,6 +53,69 @@ h1 {
   gap: 24px;
 }
 
+.stream-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 16px;
+}
+
+.stream-controls .description {
+  margin: 0;
+}
+
+.stream-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stream-toggle input {
+  appearance: none;
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  margin: 0;
+  padding: 3px;
+  border: 1px solid #64748b;
+  border-radius: 20px;
+  background: #64748b;
+  cursor: pointer;
+}
+
+.stream-toggle input::before {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  content: "";
+}
+
+.stream-toggle input:checked {
+  border-color: #2563eb;
+  background: #2563eb;
+}
+
+.stream-toggle input:checked::before {
+  transform: translateX(18px);
+}
+
+.stream-toggle input:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.stream-toggle:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .chart-card {
   min-width: 0;
   padding: 24px;

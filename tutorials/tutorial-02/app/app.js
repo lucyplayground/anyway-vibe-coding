@@ -19,10 +19,12 @@ const cumulativeSales = monthlySales.map((sales) => {
 const streamIntervalMs = 3000;
 const maxVisibleMonths = 12;
 const streamStatus = document.getElementById("stream-status");
+const streamToggle = document.getElementById("toggle-stream");
 
 if (typeof Chart === "undefined") {
   document.getElementById("chart-error").hidden = false;
   streamStatus.textContent = "차트를 불러오지 못해 자동 갱신을 시작하지 못했습니다.";
+  streamToggle.checked = false;
 } else {
   const chartStates = [];
   const charts = [
@@ -108,9 +110,16 @@ if (typeof Chart === "undefined") {
   }
 
   let totalMonths = salesData.length;
-  const streamDescription = `자동 갱신 중 · ${streamIntervalMs / 1000}초마다 예시 데이터 추가 · 최근 ${maxVisibleMonths}개월 표시`;
+  let streamingEnabled = true;
+  let lastAdded = "";
+  const updateStreamStatus = () => {
+    const state = streamingEnabled ? "자동 갱신 중" : "일시 중지됨";
+    streamStatus.textContent = `${state} · ${streamIntervalMs / 1000}초마다 예시 데이터 추가 · 최근 ${maxVisibleMonths}개월 표시${lastAdded}`;
+    streamToggle.checked = streamingEnabled;
+  };
 
   const appendRandomSales = () => {
+    if (!streamingEnabled) return;
     const monthNumber = totalMonths % 12 + 1;
     const yearNumber = Math.floor(totalMonths / 12) + 1;
     const month = yearNumber === 1 ? `${monthNumber}월` : `${yearNumber}년차 ${monthNumber}월`;
@@ -136,16 +145,26 @@ if (typeof Chart === "undefined") {
       syncCheckbox();
     }
 
-    streamStatus.textContent = `${streamDescription} · 최근 추가: ${month}, ${sales}만원`;
+    lastAdded = ` · 최근 추가: ${month}, ${sales}만원`;
+    updateStreamStatus();
   };
 
   let streamTimer;
   const startStreaming = () => {
     clearInterval(streamTimer);
-    streamTimer = setInterval(appendRandomSales, streamIntervalMs);
+    if (streamingEnabled) {
+      streamTimer = setInterval(appendRandomSales, streamIntervalMs);
+    }
   };
 
-  streamStatus.textContent = streamDescription;
+  streamToggle.addEventListener("change", () => {
+    streamingEnabled = streamToggle.checked;
+    startStreaming();
+    updateStreamStatus();
+  });
+
+  updateStreamStatus();
+  streamToggle.disabled = false;
   startStreaming();
   window.addEventListener("pagehide", () => clearInterval(streamTimer));
   window.addEventListener("pageshow", (event) => {
