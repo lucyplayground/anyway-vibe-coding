@@ -73,13 +73,6 @@ h2 {
   margin-top: 24px;
 }
 
-.empty-state {
-  margin: 16px 0 0;
-  color: #64748b;
-  font-size: 13px;
-  text-align: center;
-}
-
 .error {
   padding: 16px;
   border: 1px solid #fca5a5;

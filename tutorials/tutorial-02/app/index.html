@@ -14,7 +14,7 @@
       <header class="page-header">
         <p class="eyebrow">TUTORIAL 02 · CHART.JS</p>
         <h1>인터랙티브 차트 대시보드</h1>
-        <p class="description">막대 차트와 꺾은선 차트로 데이터를 살펴보세요.</p>
+        <p class="description">월별 판매와 누적 합계를 살펴보세요. 1~6월 예시 데이터이며, 단위는 만원입니다.</p>
       </header>
 
       <p id="chart-error" class="error" role="alert" hidden>
@@ -24,25 +24,23 @@
 
       <div class="chart-grid">
         <section class="chart-card" aria-labelledby="bar-title">
-          <h2 id="bar-title">막대 차트</h2>
-          <p class="chart-description">항목별 데이터를 비교합니다.</p>
+          <h2 id="bar-title">월별 판매</h2>
+          <p class="chart-description">각 월의 판매액을 비교합니다.</p>
           <div class="chart-container">
-            <canvas id="bar-chart" role="img" aria-label="막대 차트. 아직 데이터가 없습니다.">
-              아직 데이터가 없는 막대 차트입니다.
+            <canvas id="bar-chart" role="img" aria-label="월별 판매액 막대 차트">
+              1~6월 예시 판매액을 표시하는 막대 차트입니다. 단위는 만원입니다.
             </canvas>
           </div>
-          <p class="empty-state">아직 데이터가 없습니다.</p>
         </section>
 
         <section class="chart-card" aria-labelledby="line-title">
-          <h2 id="line-title">꺾은선 차트</h2>
-          <p class="chart-description">데이터의 변화 흐름을 살펴봅니다.</p>
+          <h2 id="line-title">누적 합계</h2>
+          <p class="chart-description">1월부터 해당 월까지의 판매액을 합산합니다.</p>
           <div class="chart-container">
-            <canvas id="line-chart" role="img" aria-label="꺾은선 차트. 아직 데이터가 없습니다.">
-              아직 데이터가 없는 꺾은선 차트입니다.
+            <canvas id="line-chart" role="img" aria-label="누적 판매액 꺾은선 차트">
+              1~6월 예시 판매액의 누적 합계를 표시하는 꺾은선 차트입니다. 단위는 만원입니다.
             </canvas>
           </div>
-          <p class="empty-state">아직 데이터가 없습니다.</p>
         </section>
       </div>
     </main>
