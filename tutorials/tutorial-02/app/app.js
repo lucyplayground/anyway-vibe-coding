@@ -51,7 +51,7 @@ if (typeof Chart === "undefined") {
     canvas.setAttribute("aria-label", description);
     canvas.textContent = description;
 
-    new Chart(canvas, {
+    const chart = new Chart(canvas, {
       type,
       data: {
         labels: months,
@@ -75,5 +75,29 @@ if (typeof Chart === "undefined") {
         },
       },
     });
+
+    if (type === "bar") {
+      const button = document.getElementById("toggle-bars");
+      const syncButton = () => {
+        const visible = chart.isDatasetVisible(0);
+        button.textContent = visible ? "막대 숨기기" : "막대 보여 주기";
+        canvas.setAttribute("aria-label", visible ? description : `${description} (막대 숨김)`);
+      };
+
+      button.addEventListener("click", () => {
+        chart.setDatasetVisibility(0, !chart.isDatasetVisible(0));
+        chart.update();
+        syncButton();
+      });
+
+      // 범례로 표시 상태를 바꿔도 버튼 문구를 같은 상태로 유지합니다.
+      chart.options.plugins.legend.onClick = (event, item, legend) => {
+        Chart.defaults.plugins.legend.onClick.call(legend, event, item, legend);
+        syncButton();
+      };
+
+      syncButton();
+      button.disabled = false;
+    }
   }
 }
