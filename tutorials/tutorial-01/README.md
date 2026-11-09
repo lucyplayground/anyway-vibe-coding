@@ -15,3 +15,9 @@
 할 일과 완료 상태는 브라우저의 `localStorage`에 자동으로 저장됩니다. 저장을 허용하는 같은 브라우저에서 같은 주소로 페이지를 다시 열면 목록이 복원됩니다.
 
 할 일을 등록하거나 편집할 때 **우선순위**를 선택할 수 있습니다. **추가** 또는 **저장**을 누르면 목록에서 제목 배경색으로 표시됩니다. 높음은 연분홍, 보통은 연파랑, 낮음은 연초록, 미지정은 연회색입니다. 목록 위에서 **등록순**과 **우선순위순**을 전환할 수 있습니다. 우선순위순은 높음, 보통, 낮음, 미지정 순서로 표시하며, 같은 우선순위 안에서는 등록 순서를 따릅니다.
+
+## 스크린샷
+
+| 할 일 목록 | 할 일 편집 |
+| --- | --- |
+| <img src="https://raw.githubusercontent.com/lucyplayground/anyway-vibe-coding/ba2084ceb94689cb1b853b5b811f235db93a2dc6/tutorials/tutorial-01/screenshots/task-list.png" alt="우선순위와 완료 상태가 표시된 모바일 할 일 목록" width="260"> | <img src="https://raw.githubusercontent.com/lucyplayground/anyway-vibe-coding/ba2084ceb94689cb1b853b5b811f235db93a2dc6/tutorials/tutorial-01/screenshots/task-edit.png" alt="할 일 제목과 우선순위를 수정하는 모바일 편집 화면" width="260"> |
