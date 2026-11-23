@@ -160,6 +160,8 @@ h2 {
   margin: 0;
   color: #76717e;
   font-size: 12px;
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .palette-output {
@@ -167,6 +169,56 @@ h2 {
   border: 1px dashed #d8d4df;
   border-radius: 12px;
   background: #faf9fc;
+}
+
+.palette-output.has-colors {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-content: center;
+  gap: 10px;
+  padding: 16px;
+  border-style: solid;
+}
+
+.palette-color {
+  min-width: 0;
+  text-align: center;
+}
+
+.color-square {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 1px solid #29263315;
+}
+
+.palette-color span {
+  display: block;
+  margin-top: 8px;
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+}
+
+#status {
+  margin: 14px 0 0;
+  color: #655083;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+#status:empty {
+  display: none;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+@media (max-width: 600px) {
+  .palette-output.has-colors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 480px) {
